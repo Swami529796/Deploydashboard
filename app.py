@@ -5,30 +5,38 @@ import plotly.graph_objs as go
 from datetime import datetime
 
 # Load data from Excel
-df = pd.read_excel('Test for Dashboard.xlsx')
+df = pd.read_excel('Test.xlsx')
 df['INFLOW_DATE'] = pd.to_datetime(df['INFLOW_DATE'])
 df['Year'] = df['INFLOW_DATE'].dt.year
 
 # Initialize the Dash app
 app = Dash(__name__)
 
-app.css.append_css({'external_url': '/static/style.css'})
+#app.css.append_css({'external_url': '/static/style.css'})
 
 # Define month order and mappings
 month_order = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ]
 month_name_to_number = {name: i for i, name in enumerate(month_order, 1)}
 
 # CSS styles
 
 
-app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'backgroundColor': '#f0f2f5'}, children=[
-    html.H1("Trends Overview", style={'textAlign': 'center', 'color': '#003366', 'fontSize': '36px', 'padding': '20px 0'}),
-
+app.layout = html.Div(style={'fontFamily': 'Times New Roman, sans-serif', 'backgroundColor': '#f0f2f5'}, 
+                      children=[
+    html.Div(style={'backgroundColor':'#f9f9f9','height':'8px','width':'100%','position':'relative'}),
+    html.Div(style={'backgroundColor':'#f9f9f9','height':'60px','width':'100%','display':'flex','alignItems':'center','justifyContent':'center'},
+             children=[
+    html.H1("PACE BTO DASHBOARD", style={'textAlign': 'center', 'color': 'black', 'fontSize': '36px', 'padding': '20px 0'}),
+    ]),
+    
     dcc.Tabs(style={'fontSize': '20px'}, children=[
-        dcc.Tab(label='Trends Overview', style={'backgroundColor': '#e0f7fa', 'border': '1px solid #00838f'}, children=[
+
+
+        dcc.Tab(label='Overview', style={'backgroundColor': '#bad7f5', 'border': '1px solid #bad7f5'}, 
+            children=[
             html.Div([
                 dcc.Checklist(
                     id='year-filter',
@@ -36,20 +44,20 @@ app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'backgroundColor
                     value=[sorted(df['Year'].unique())[-1]],
                     labelStyle={'display': 'inline-block', 'margin-right': '10px'}
                 ),
-            ], style={'textAlign': 'center', 'padding': '20px 0'}),
+            ],  style={'textAlign': 'center', 'padding': '20px 0'}),
 
             html.Div([
-                dcc.Graph(id='month-trend', style={'display': 'inline-block', 'width': '48%', 'padding': '10px'}),
-                dcc.Graph(id='quarter-trend', style={'display': 'inline-block', 'width': '48%', 'padding': '10px'}),
+                dcc.Graph(id='month-trend', style={'display': 'inline-block', 'width': '60%', 'padding': '10px'}),
+                dcc.Graph(id='disease-trend', style={'display': 'inline-block', 'width': '30%', 'padding': '10px'}),
             ]),
 
             html.Div([
-                dcc.Graph(id='disease-trend', style={'display': 'inline-block', 'width': '48%', 'padding': '10px'}),
-                dcc.Graph(id='client-trend', style={'display': 'inline-block', 'width': '48%', 'padding': '10px'}),
+                dcc.Graph(id='client-trend', style={'display': 'inline-block', 'width': '60%', 'padding': '10px'}),
+                dcc.Graph(id='quarter-trend', style={'display': 'inline-block', 'width': '30%', 'padding': '10px'}),
             ]),
         ]),
 
-        dcc.Tab(label='Yearly Comparison', style={'backgroundColor': '#ffecb3', 'border': '1px solid #ffa000'}, children=[
+        dcc.Tab(label='Yearly Comparison', style={'backgroundColor': '#bad7f5', 'border': '1px solid #bad7f5'}, children=[
             html.Div([
                 dcc.Dropdown(
                     id='year-filter-1',
@@ -77,7 +85,7 @@ app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'backgroundColor
 )
 def update_month_trend(selected_years):
     filtered_df = df[df['Year'].isin(selected_years)].copy()
-    filtered_df['Month'] = filtered_df['INFLOW_DATE'].dt.month_name()
+    filtered_df['Month'] = filtered_df['INFLOW_DATE'].dt.strftime('%b')
     # Group by month and count cases
     month_trend = filtered_df.groupby('Month')['CASE_NAME'].count().reindex(month_order, fill_value=0).reset_index()
     month_trend.columns = ['Month', 'No of Case']
@@ -89,14 +97,14 @@ def update_month_trend(selected_years):
     fig.update_traces(
         hovertemplate='Month = %{x}<br>No of Case = %{y}',
         textposition='top center',
-        textfont=dict(size=12, color='#003366', family='Arial', weight='bold'),
+        textfont=dict(size=10, color='#003366', family='Times New Roman', weight='bold'),
         line_color='#00695c'
     )
 
     fig.update_layout(
         xaxis_title='Month', 
         yaxis_title='No of Case',  
-        title_font=dict(size=24, color='black', family='Arial', weight='bold'), 
+        title_font=dict(size=24, color='black', family='Times New Roman', weight='bold'), 
         plot_bgcolor='#e8f5e9', 
         paper_bgcolor='#f0f2f5', 
         font_color='#003366'
@@ -119,11 +127,11 @@ def update_quarter_trend(selected_years):
     # Update hovertemplate and bold text labels
     fig.update_traces(
         hovertemplate='Quarter = %{label}<br>No of Case = %{value}',
-        textfont=dict(size=12, color='#003366', family='Arial', weight='bold'),
+        textfont=dict(size=10, color='#003366', family='Times New Roman', weight='bold'),
         marker=dict(colors=['#ff8a65', '#4db6ac', '#9575cd', '#ffb74d'])
     )
 
-    fig.update_layout(title_font=dict(size=24, color='black', family='Arial', weight='bold'), 
+    fig.update_layout(title_font=dict(size=24, color='black', family='Times New Roman', weight='bold'), 
                       plot_bgcolor='#ffe0b2', 
                       paper_bgcolor='#f0f2f5', 
                       font_color='#003366')
@@ -143,11 +151,11 @@ def update_disease_trend(selected_years):
     # Update hovertemplate and bold text labels
     fig.update_traces(
         hovertemplate='Disease = %{label}<br>No of Case = %{value}',
-        textfont=dict(size=12, color='#003366', family='Arial', weight='bold'),
+        textfont=dict(size=10, color='#003366', family='Times New Roman', weight='bold'),
         marker=dict(colors=['#66bb6a', '#64b5f6', '#ffb74d'])
     )
 
-    fig.update_layout(title_font=dict(size=24, color='black', family='Arial', weight='bold'), 
+    fig.update_layout(title_font=dict(size=24, color='black', family='Times New Roman', weight='bold'), 
                       plot_bgcolor='#f1f8e9', 
                       paper_bgcolor='#f0f2f5', 
                       font_color='#003366')
@@ -168,7 +176,7 @@ def update_client_trend(selected_years):
     # Update hovertemplate and bold text labels
     fig.update_traces(
         hovertemplate='Client = %{x}<br>No of Case = %{y}',
-        textfont=dict(size=12, color='#003366', family='Arial', weight='bold'),
+        textfont=dict(size=10, color='#003366', family='Times New Roman', weight='bold'),
         textposition='outside',
         marker_color='#5e35b1'
     )
@@ -176,10 +184,11 @@ def update_client_trend(selected_years):
     fig.update_layout(
         xaxis_title='Client', 
         yaxis_title='No of Case', 
-        title_font=dict(size=24, color='black', family='Arial', weight='bold'),
+        title_font=dict(size=24, color='black', family='Times New Roman', weight='bold'),
         plot_bgcolor='#ede7f6', 
         paper_bgcolor='#f0f2f5', 
-        font_color='#003366'
+        font_color='#003366',
+        margin = dict(t = 50, b=50, l=100, r = 50)
         
     )
     return fig
@@ -199,8 +208,8 @@ def update_year_comparison(year1, year2):
     filtered_df2 = df[df['Year'] == year2].copy()
 
     # Group by month and count cases, reindex to include all months
-    month_trend1 = filtered_df1.groupby(filtered_df1['INFLOW_DATE'].dt.month_name())['CASE_NAME'].count().reindex(month_order, fill_value=0).reset_index()
-    month_trend2 = filtered_df2.groupby(filtered_df2['INFLOW_DATE'].dt.month_name())['CASE_NAME'].count().reindex(month_order, fill_value=0).reset_index()
+    month_trend1 = filtered_df1.groupby(filtered_df1['INFLOW_DATE'].dt.strftime('%b'))['CASE_NAME'].count().reindex(month_order, fill_value=0).reset_index()
+    month_trend2 = filtered_df2.groupby(filtered_df2['INFLOW_DATE'].dt.strftime('%b'))['CASE_NAME'].count().reindex(month_order, fill_value=0).reset_index()
     month_trend1.columns = ['Month', 'No of Case']
     month_trend2.columns = ['Month', 'No of Case']
 
@@ -273,10 +282,10 @@ def update_year_comparison(year1, year2):
         xaxis={'categoryorder':'array', 'categoryarray': month_order},  # Ensures the X-axis is ordered by months
         plot_bgcolor='#f9f9f9', 
         font_color='#003366',
-        title_font=dict(size=24, color='black', family='Arial', weight='bold'),
+        title_font=dict(size=24, color='black', family='Times New Roman', weight='bold'),
     )
 
     return fig
 
 if __name__ == '__main__':
-    app.run_server(debug=True)      
+    app.run_server(debug=True)
