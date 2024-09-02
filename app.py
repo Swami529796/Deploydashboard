@@ -5,7 +5,7 @@ import plotly.graph_objs as go
 from datetime import datetime
 
 # Load data from Excel
-df = pd.read_excel('Test.xlsx')
+df = pd.read_excel('Test for Dashboard.xlsx')
 df['INFLOW_DATE'] = pd.to_datetime(df['INFLOW_DATE'])
 df['Year'] = df['INFLOW_DATE'].dt.year
 
@@ -26,57 +26,72 @@ month_name_to_number = {name: i for i, name in enumerate(month_order, 1)}
 
 app.layout = html.Div(style={'fontFamily': 'Times New Roman, sans-serif', 'backgroundColor': '#f0f2f5'}, 
                       children=[
-    html.Div(style={'backgroundColor':'#f9f9f9','height':'8px','width':'100%','position':'relative'}),
-    html.Div(style={'backgroundColor':'#f9f9f9','height':'60px','width':'100%','display':'flex','alignItems':'center','justifyContent':'center'},
+    # Dashboard Title Bar
+    html.Div(style={'backgroundColor': '#ffffff', 'padding': '20px', 'borderRadius': '10px', 'boxShadow': '0px 0px 10px rgba(0,0,0,0.1)', 'marginBottom': '20px'},
              children=[
-    html.H1("PACE BTO DASHBOARD", style={'textAlign': 'center', 'color': 'black', 'fontSize': '36px', 'padding': '20px 0'}),
+        html.Div(style={'backgroundColor': '#f9f9f9', 'height': '8px', 'width': '100%', 'position': 'relative'}),
+        html.Div(style={'height': '60px', 'width': '100%', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center'},
+                 children=[
+            html.H1("PACE BTO DASHBOARD", style={'textAlign': 'center', 'color': 'black', 'fontSize': '36px'})
+        ])
     ]),
-    
+
     dcc.Tabs(style={'fontSize': '20px'}, children=[
 
-
+        # Tab 1
         dcc.Tab(label='Overview', style={'backgroundColor': '#bad7f5', 'border': '1px solid #bad7f5'}, 
             children=[
-            html.Div([
-                dcc.Checklist(
-                    id='year-filter',
-                    options=[{'label': year, 'value': year} for year in sorted(df['Year'].unique())],
-                    value=[sorted(df['Year'].unique())[-1]],
-                    labelStyle={'display': 'inline-block', 'margin-right': '10px'}
-                ),
-            ],  style={'textAlign': 'center', 'padding': '20px 0'}),
+            html.Div(style={'backgroundColor': '#ffffff', 'padding': '20px', 'borderRadius': '10px', 'boxShadow': '0px 0px 10px rgba(0,0,0,0.1)', 'marginBottom': '20px'},
+                     children=[
+                html.Div([
+                    dcc.Checklist(
+                        id='year-filter',
+                        options=[{'label': year, 'value': year} for year in sorted(df['Year'].unique())],
+                        value=[sorted(df['Year'].unique())[-1]],
+                        labelStyle={'display': 'inline-block', 'margin-right': '10px'}
+                    ),
+                ], style={'textAlign': 'center', 'padding': '20px 0'}),
 
-            html.Div([
-                dcc.Graph(id='month-trend', style={'display': 'inline-block', 'width': '60%', 'padding': '10px'}),
-                dcc.Graph(id='disease-trend', style={'display': 'inline-block', 'width': '30%', 'padding': '10px'}),
-            ]),
+                html.Div(style={'display': 'flex', 'justifyContent': 'space-between', 'gap': '20px', 'flexWrap': 'wrap'}, children=[
+                    html.Div(dcc.Graph(id='month-trend'), style={'flex': '1', 'minWidth': '300px', 'backgroundColor': '#ffffff', 'padding': '20px', 'borderRadius': '10px', 'boxShadow': '0px 0px 10px rgba(0,0,0,0.1)'}),
+                    html.Div(dcc.Graph(id='disease-trend'), style={'flex': '0.5', 'minWidth': '300px', 'backgroundColor': '#ffffff', 'padding': '20px', 'borderRadius': '10px', 'boxShadow': '0px 0px 10px rgba(0,0,0,0.1)'}),
+                ]),
 
-            html.Div([
-                dcc.Graph(id='client-trend', style={'display': 'inline-block', 'width': '60%', 'padding': '10px'}),
-                dcc.Graph(id='quarter-trend', style={'display': 'inline-block', 'width': '30%', 'padding': '10px'}),
-            ]),
+                html.Div(style={'display': 'flex', 'justifyContent': 'space-between', 'gap': '20px', 'flexWrap': 'wrap'}, children=[
+                    html.Div(dcc.Graph(id='client-trend'), style={'flex': '1', 'minWidth': '300px', 'backgroundColor': '#ffffff', 'padding': '20px', 'borderRadius': '10px', 'boxShadow': '0px 0px 10px rgba(0,0,0,0.1)'}),
+                    html.Div(dcc.Graph(id='quarter-trend'), style={'flex': '0.5', 'minWidth': '300px', 'backgroundColor': '#ffffff', 'padding': '20px', 'borderRadius': '10px', 'boxShadow': '0px 0px 10px rgba(0,0,0,0.1)'}),
+                ]),
+            ])
         ]),
 
+        # Tab 2
         dcc.Tab(label='Yearly Comparison', style={'backgroundColor': '#bad7f5', 'border': '1px solid #bad7f5'}, children=[
-            html.Div([
-                dcc.Dropdown(
-                    id='year-filter-1',
-                    options=[{'label': year, 'value': year} for year in sorted(df['Year'].unique())],
-                    value=sorted(df['Year'].unique())[-2],
-                    style={'width': '48%', 'display': 'inline-block', 'padding': '10px', 'backgroundColor': '#ffffff', 'border': '1px solid #cccccc', 'color': '#003366'}
-                ),
-                dcc.Dropdown(
-                    id='year-filter-2',
-                    options=[{'label': year, 'value': year} for year in sorted(df['Year'].unique())],
-                    value=sorted(df['Year'].unique())[-1],
-                    style={'width': '48%', 'display': 'inline-block', 'padding': '10px', 'backgroundColor': '#ffffff', 'border': '1px solid #cccccc', 'color': '#003366'}
-                ),
-            ], style={'width': '100%', 'textAlign': 'center', 'padding': '20px 0'}),
+            html.Div(style={'backgroundColor': '#ffffff', 'padding': '20px', 'borderRadius': '10px', 'boxShadow': '0px 0px 10px rgba(0,0,0,0.1)', 'marginBottom': '20px'},
+                     children=[
+                html.Div([
+                    dcc.Dropdown(
+                        id='year-filter-1',
+                        options=[{'label': year, 'value': year} for year in sorted(df['Year'].unique())],
+                        value=sorted(df['Year'].unique())[-2],
+                        style={'width': '48%', 'display': 'inline-block', 'padding': '10px', 'backgroundColor': '#ffffff', 'border': '1px solid #cccccc', 'color': '#003366'}
+                    ),
+                    dcc.Dropdown(
+                        id='year-filter-2',
+                        options=[{'label': year, 'value': year} for year in sorted(df['Year'].unique())],
+                        value=sorted(df['Year'].unique())[-1],
+                        style={'width': '48%', 'display': 'inline-block', 'padding': '10px', 'backgroundColor': '#ffffff', 'border': '1px solid #cccccc', 'color': '#003366'}
+                    ),
+                ], style={'width': '100%', 'textAlign': 'center', 'padding': '20px 0'}),
 
-            dcc.Graph(id='year-comparison', style={'width': '100%', 'padding': '10px'}),
+                html.Div(dcc.Graph(id='year-comparison'), style={'width': '100%', 'padding': '10px', 'backgroundColor': '#ffffff', 'borderRadius': '10px', 'boxShadow': '0px 0px 10px rgba(0,0,0,0.1)'}),
+            ])
         ]),
     ])
 ])
+
+
+
+
 
 # Callback for Month-wise Trend
 @app.callback(
